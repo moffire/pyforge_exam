@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: web_prod
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile.prod
+    command: gunicorn --bind 0.0.0.0:5000 manage:app
+    expose:
+      - 5000
+    env_file:
+      - ./.env.prod
+    # it is necessary to specify the platform to skip psycopg2 SCRAM error on M1
+    platform:
+      linux/amd64
+    depends_on:
+      - db
+  db:
+    container_name: db_prod
+    image: postgres:14.0-alpine
+    ports:
+      - "54321:5432"
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod.db
+  nginx:
+    container_name: nginx_prod
+    build: ./services/nginx
+    ports:
+      - "1337:80"
+    depends_on:
+      - web
+volumes:
+  postgres_data_prod:

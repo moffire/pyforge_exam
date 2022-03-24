@@ -1,4 +1,5 @@
 from flask_marshmallow import Marshmallow
+from marshmallow import fields
 
 ma = Marshmallow()
 
@@ -23,11 +24,20 @@ class CategorySchema(ma.Schema):
 categories_schema = CategorySchema(many=True)
 
 
-class OrderSchema(ma.Schema):
-    analysis = ma.Nested(AnalysisSchema())
+class DoctorOrderSchema(ma.Schema):
+    id = fields.Integer(attribute='doctor.id')
+    name = fields.String(attribute='doctor.username')
 
     class Meta:
-        fields = ('result', 'analysis')
+        fields = ('id', 'name')
+
+
+class OrderSchema(ma.Schema):
+    analysis = ma.Nested(AnalysisSchema())
+    doctors = ma.Nested(DoctorOrderSchema(many=True))
+
+    class Meta:
+        fields = ('id', 'result', 'analysis', 'doctors')
 
 
 order_schema = OrderSchema()

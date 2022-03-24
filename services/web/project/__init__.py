@@ -21,7 +21,6 @@ def token_required(f):
         token = None
         if 'x-access-tokens' in request.headers:
             token = request.headers['x-access-tokens']
-
         if not token:
             return jsonify({'message': 'Token is missing'})
         try:
@@ -29,10 +28,21 @@ def token_required(f):
             current_user = User.query.filter_by(public_id=data['public_id']).first()
         except:
             return jsonify({'message': 'Token is invalid'})
-
         return f(current_user, *args, **kwargs)
 
     return decorator
+
+
+def role_required(role=None):
+    @wraps(role)
+    def wrap(f):
+        @wraps(f)
+        def decorator(current_user):
+            if getattr(current_user, f'is_{role}'):
+                return f(current_user)
+            return make_response('Forbidden', 403)
+        return decorator
+    return wrap
 
 
 @app.route('/login', methods=['POST'])
@@ -80,6 +90,7 @@ def signup():
 
 @app.route('/analyses', methods=['GET', 'POST'])
 @token_required
+@role_required('patient')
 def analyses(current_user):
     if request.method == 'GET':
         categories = Category.query.all()
@@ -115,6 +126,7 @@ def analyses(current_user):
 
 @app.route('/fill_result', methods=['PATCH'])
 @token_required
+@role_required('technician')
 def fill_result(current_user):
     order_id = request.form['order_id']
     result = request.form['result']
@@ -133,6 +145,7 @@ def fill_result(current_user):
 
 @app.route('/doctor_orders', methods=['GET'])
 @token_required
+@role_required('doctor')
 def doctor_orders(current_user):
     orders_ids = [order.id for order in DoctorOrder.query.filter_by(doctor_id=current_user.id).all()]
     results = Order.query.filter(Order.id.in_(orders_ids)).all()

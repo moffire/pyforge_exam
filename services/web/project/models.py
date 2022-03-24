@@ -70,3 +70,4 @@ class DoctorOrder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     doctor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
+    doctor = relationship('User', backref='orders')

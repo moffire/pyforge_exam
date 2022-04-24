@@ -5,3 +5,4 @@ psycopg2-binary==2.9.3
 flask_marshmallow==0.14.0
 marshmallow-sqlalchemy==0.28.0
 pyjwt==2.3.0
+pytest==7.1.1

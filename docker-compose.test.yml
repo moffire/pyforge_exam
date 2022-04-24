@@ -3,7 +3,9 @@ version: '3.8'
 services:
   web:
     container_name: web_test
-    build: ./services/web
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile.test
     command: python manage.py run -h 0.0.0.0
     volumes:
       - ./services/web/:/usr/src/app/
@@ -21,10 +23,8 @@ services:
     ports:
       - "54321:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=pyforge
-      - POSTGRES_PASSWORD=pyforge
-      - POSTGRES_DB=pyforge
+      - postgres_data_test:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.test.db
 volumes:
-  postgres_data:
+  postgres_data_test:

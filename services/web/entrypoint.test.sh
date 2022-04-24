@@ -10,3 +10,12 @@ then
 
     echo "PostgreSQL started"
 fi
+
+if [ "$FLASK_ENV" = "test" ]
+then
+    echo "Creating db tables"
+    python manage.py create_db
+    echo "Done"
+fi
+
+exec "$@"

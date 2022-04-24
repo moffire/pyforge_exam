@@ -67,6 +67,7 @@ def login():
         )
 
         return make_response(jsonify({'token': token}), 201)
+
     return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm ="Wrong password"'})
 
 
@@ -76,6 +77,8 @@ def signup():
 
     username = data.get('username')
     password = data.get('password')
+    if not username or not password:
+        return make_response('Username and password required', 400)
 
     user = User.query.filter_by(username=username).first()
     if not user:
@@ -150,7 +153,3 @@ def doctor_orders(current_user):
     orders_ids = [order.id for order in DoctorOrder.query.filter_by(doctor_id=current_user.id).all()]
     results = Order.query.filter(Order.id.in_(orders_ids)).all()
     return orders_schema.jsonify(results)
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')

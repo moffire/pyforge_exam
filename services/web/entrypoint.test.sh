@@ -10,13 +10,3 @@ then
 
     echo "PostgreSQL started"
 fi
-
-if [ "$FLASK_ENV" = "production" ]
-then
-    echo "Creating and populating tables"
-    python manage.py create_db
-    python manage.py seed_db
-    echo "Done"
-fi
-
-exec "$@"

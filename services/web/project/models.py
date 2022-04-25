@@ -61,7 +61,7 @@ class Order(db.Model):
     doctors = relationship('DoctorOrder', uselist=True, backref='orders')
 
     def __repr__(self):
-        return f'Order №{self.id} ** Patient: {self.user.username} ** Analysis: {self.analysis.name}'
+        return f'Order №{self.id}'
 
 
 class DoctorOrder(db.Model):

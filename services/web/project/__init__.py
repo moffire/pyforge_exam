@@ -52,14 +52,12 @@ def login():
     password = auth.get('password')
 
     if not (auth or username or password):
-        return make_response(
-            'Could not verify', 401, {'WWW-Authenticate': 'Basic realm ="Username and password are required"'}
-        )
+        return make_response('Username and password are required', 403)
 
     user = User.query.filter_by(username=username).first()
 
     if not user:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm ="User does not exist"'})
+        return make_response('User does not exist', 403)
 
     if check_password_hash(user.password, password):
         token = jwt.encode(
@@ -68,7 +66,7 @@ def login():
 
         return make_response(jsonify({'token': token}), 201)
 
-    return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm ="Wrong password"'})
+    return make_response('Wrong password', 403)
 
 
 @app.route('/signup', methods=['POST'])
